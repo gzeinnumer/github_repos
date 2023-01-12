@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <div id="add_to_me"></div>
+
+    <div id="new"></div>
+
+    <script>
+        $(function(){
+            run();
+        });
+
+        function run(){
+
+            document.getElementById("add_to_me").innerHTML +=
+                "";
+
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const page = urlParams.get('page');
+
+            for (var i = 0; i < page; i++) {
+                console.log(i + 1);
+                console.log('waiting...');
+
+                $.ajax({
+                    url: "https://api.github.com/users/gzeinnumer/repos?per_page=100&page=" + (i + 1),
+                    jsonp: true,
+                    method: "GET",
+                    dataType: "json",
+                    success: function (res) {
+                        for (var i = 0; i < res.length; i++) {
+                            var created_at = res[i].created_at.split("T")[0];
+                            pDiv = document.getElementById('new');
+                            var n = pDiv.childNodes.length + 1;
+                            var newDiv = document.createElement("div");
+                            newDiv.innerHTML = "- "+ created_at +" [**" + res[i].name + "**](https://github.com/gzeinnumer/" + res[i].name + ")";
+                            pDiv.appendChild(newDiv);
+                        }
+                    }
+                });
+
+                wait(3000);
+            }
+        }
+
+        function wait(ms) {
+                var start = new Date().getTime();
+                var end = start;
+                while (end < start + ms) {
+                    end = new Date().getTime();
+                }
+            }
+    </script>
+
+    
+</body>
+</html>
